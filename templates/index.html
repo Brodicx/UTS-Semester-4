@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sentimen Komentar Instagram</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f4f6f9;
+      background-image: url("{{ url_for('static', filename='background.png') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      aspect-ratio: 16/9;
+      transition: background-image 0.2s;
+    }
+    h1 {
+      text-align: center;
+      color: #8feff0;
+      padding: 20px 0;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: rgb(52, 152, 219);
+      padding: 10px;
+    }
+    .tabs button {
+      background: none;
+      border: none;
+      font-size: 16px;
+      margin: 0 20px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      border-bottom: 2px solid #3498db;
+      color: #092b42;
+    }
+    .tab-content {
+      display: none;
+      padding: 20px;
+      background: rgba(255,255,255,0.8);
+      padding: 30px;
+      border-radius: 0 0 10px 10px;
+      margin-top: -5px;
+      min-height: 200px;
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .column {
+      width: 50%;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    #dashboard {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin: 20px auto;
+      max-width: 500px;
+    }
+    .positif { color: green; }
+    .netral { color: blue; }
+    .negatif { color: red; }
+    .sedih { color: purple; }
+    .marah { color: orange; }
+    .takut { color: teal; }
+    table {
+      width: 100%;
+    }
+    td {
+      padding: 6px;
+    }
+    .chart img, .wordcloud img {
+      width: 100%;
+      height: auto;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #010101;
+      resize: none;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .comment-list {
+      text-align: left;
+      margin: 20px;
+    }
+    .comment-item {
+      margin-bottom: 10px;
+    }
+    .sentimen {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sentimen Komentar Instagram</h1>
+
+  <div class="tabs">
+    <button class="tablink active" onclick="showTab(event, 'Dashboard')">Dashboard</button>
+    <button class="tablink" onclick="showTab(event, 'Analisis')">Analisis</button>
+    <button class="tablink" onclick="showTab(event, 'Komentar')">Daftar Komentar</button>
+    <button class="tablink" onclick="showTab(event, 'Upload')">Upload Komentar</button>
+  </div>
+
+  <div id="Dashboard" class="tab-content active">
+    <div id="dashboard">
+      <h3>Dashboard</h3>
+      <p>Total Komentar: <strong>{{ total }}</strong></p>
+      <p class="positif">Positif: {{ positif }}</p>
+      <p class="netral">Netral: {{ netral }}</p>
+      <p class="negatif">Negatif: {{ negatif }}</p>
+      <p class="sedih">Sedih: {{ sedih }}</p>
+      <p class="marah">Marah: {{ marah }}</p>
+      <p class="takut">Takut: {{ takut }}</p>
+    </div>
+  </div>
+
+  <div id="Analisis" class="tab-content">
+    <div class="column">
+      <h2>Analisis Sentimen</h2>
+      <div class="chart">
+        <h4>Jumlah Komentar per Sentimen</h4>
+        <img src="{{ url_for('static', filename='visualisasi_bar_sentimen.png') }}" alt="Bar Sentimen">
+        <h4>Distribusi Sentimen</h4>
+        <img src="{{ url_for('static', filename='visualisasi_pie_sentimen.png') }}" alt="Pie Sentimen">
+      </div>
+      <div class="wordcloud">
+        <h2>Wordcloud</h2>
+        <h3>Wordcloud positif</h3>
+        <img src="{{ url_for('static', filename='wordcloud_positif.png') }}" alt="Positif">
+        <h3>Wordcloud Netral</h3>
+        <img src="{{ url_for('static', filename='wordcloud_netral.png') }}" alt="Netral">
+        <h3>Wordcloud Negatif</h3>
+        <img src="{{ url_for('static', filename='wordcloud_negatif.png') }}" alt="Negatif">
+        <h3>Wordcloud Sedih</h3>
+        <img src="{{ url_for('static', filename='wordcloud_sedih.png') }}" alt="Sedih">
+        <h3>Wordcloud Takut</h3>
+        <img src="{{ url_for('static', filename='wordcloud_takut.png') }}" alt="Takut">
+        
+      </div>
+    </div>
+  </div>
+
+  <div id="Komentar" class="tab-content">
+    <div class="column">
+      <h3>Daftar Komentar</h3>
+      <div class="comment-list">
+        {% for komentar, sentimen in data_komentar %}
+        <div class="comment-item">
+          <p>{{ komentar }} <span class="sentimen {{ sentimen|lower }}">{{ sentimen }}</span></p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div id="Upload" class="tab-content">
+    <div class="column">
+      <h3>Upload Komentar</h3>
+      <form action="/analisis" method="post">
+        <textarea name="komentar" rows="4" placeholder="Tulis komentar di sini..." required></textarea>
+        <br>
+        <button type="submit">Kirim</button>
+      </form>
+      {% if sentimen %}
+      <div class="result">
+        <p>Sentimen: {{ sentimen }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function showTab(evt, tabName) {
+      const tabcontents = document.querySelectorAll(".tab-content");
+      tabcontents.forEach(tab => tab.classList.remove("active"));
+
+      const tablinks = document.querySelectorAll(".tablink");
+      tablinks.forEach(btn => btn.classList.remove("active"));
+
+      document.getElementById(tabName).classList.add("active");
+      evt.currentTarget.classList.add("active");
+    }
+  </script>
+</body>
+</html>
