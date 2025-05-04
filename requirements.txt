@@ -11,3 +11,4 @@ wordcloud
 plotly
 Pillow
 textblob
+flask
